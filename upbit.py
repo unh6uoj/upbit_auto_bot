@@ -19,7 +19,10 @@ class Upbit:
 
     # 인증 토큰 받기
     def get_authorization_token(self):
-        payload = {"access_key": dotenv["ACCESS_KEY"], "nonce": str(uuid.uuid4())}
+        payload = {
+            "access_key": dotenv["ACCESS_KEY"],
+            "nonce": str(uuid.uuid4()),
+        }
         jwt_token = jwt.encode(payload, dotenv["SECRET_KEY"])
         authorization_token = "Bearer {}".format(jwt_token)
 
@@ -39,16 +42,52 @@ class Upbit:
 
         return response.status_code, response.json()
 
-    # 최근 체결 내역
-    def get_trade_info(self, ticker):
-        url = f"{self.server_url}/v1/trades/ticks"
+    # 분 캔들 조회
+    def get_minute_candle(self, ticker):
+        url = f"{self.server_url}/v1/candles/minutes/1"
 
-        m = hashlib.sha512()
-        m.update(urlencode({"market": ticker}).encode())
-        query_string = m.hexdigest()
+        headers = {
+            "Authorization": self.authorization_token,
+        }
 
-        headers = {"Accept": "application/json", "query_hash": {query_string}}
+        params = {"market": ticker}
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, params=params)
+
+        return response.status_code, response.json()
+
+    # 지정가 매수
+    def buy_target_price(self, ticker, volume, price):
+        url = f"{self.server_url}/v1/orders"
+
+        headers = {"Authorization": self.authorization_token}
+
+        data = {
+            "market": ticker,
+            "side": "bid",
+            "volume": volume,
+            "price": price,
+            "ord_type": "limit",
+        }
+
+        response = requests.post(url, headers=headers, data=data)
+
+        return response.status_code, response.json()
+
+    # 지정가 매도
+    def sell_target_price(self, ticker, volume, price):
+        url = f"{self.server_url}/v1/orders"
+
+        headers = {"Authorization": self.authorization_token}
+
+        data = {
+            "market": ticker,
+            "side": "ask",
+            "volume": volume,
+            "price": price,
+            "ord_type": "limit",
+        }
+
+        response = requests.post(url, headers=headers, data=data)
 
         return response.status_code, response.json()
