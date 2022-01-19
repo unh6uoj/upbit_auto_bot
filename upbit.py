@@ -3,6 +3,8 @@ import os
 from urllib.parse import urlencode
 import uuid
 import hashlib
+from wsgiref import headers
+from black import re
 
 import requests
 import jwt
@@ -89,5 +91,29 @@ class Upbit:
         }
 
         response = requests.post(url, headers=headers, data=data)
+
+        return response.status_code, response.json()
+
+    # 주문 목록 가져오기
+    def get_orders(self, state):
+        url = f"{self.server_url}/v1/orders"
+
+        headers = {"Authorization": self.authorization_token}
+
+        params = {"state": state}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        return response.status_code, response.json()
+
+    # 주문 삭제하기
+    def delete_order(self, uuid):
+        url = f"{self.server_url}/v1/orders"
+
+        headers = {"Authorization": self.authorization_token}
+
+        data = {"uuid": uuid}
+
+        response = requests.delete(url, headers=headers, data=data)
 
         return response.status_code, response.json()
