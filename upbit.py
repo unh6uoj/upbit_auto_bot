@@ -45,7 +45,7 @@ class Upbit:
         return response.status_code, response.json()
 
     # 분 캔들 조회
-    def get_minute_candle(self, ticker):
+    def get_minute_candle_by_ticker(self, ticker):
         url = f"{self.server_url}/v1/candles/minutes/1"
 
         headers = {
@@ -95,7 +95,7 @@ class Upbit:
         return response.status_code, response.json()
 
     # 주문 목록 가져오기
-    def get_orders(self, state):
+    def get_orders(self, state="wait"):
         url = f"{self.server_url}/v1/orders"
 
         headers = {"Authorization": self.authorization_token}

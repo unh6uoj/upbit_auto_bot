@@ -1,5 +1,6 @@
 {
     "tickers": [
-        "KRW-BTC"
+        "KRW-BTC",
+        "KRW-ETH"
     ]
 }
